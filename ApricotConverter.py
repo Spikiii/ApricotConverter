@@ -95,24 +95,24 @@ def conv():
                 cRow[75] = row[11] #Start date
                 cRow[76] = row[12] #End date
 
-                #try: #Creates a separate file for each converted entry
                 fPath = fp + '/../Converted Csvs/' + cRow[2].lower() + cRow[0][0].upper() + cRow[0][1:].lower() + '.csv'
+                if(os.path.isfile(fPath)): #Checks for duplicate files, and makes new files
+                    attempts = 1
+                    fPath = fPath[:len(fPath) - 4]
+                    fPath += " (" + str(attempts) + ").csv"
+                    prevLen = len(" (" + str(attempts) + ").csv")
+                    while(os.path.isfile(fPath)):
+                        attempts += 1
+                        fPath = fPath[:len(fPath) - prevLen]
+                        fPath += " (" + str(attempts) + ").csv"
+                        prevLen = len(" (" + str(attempts) + ").csv")
                 f = open(fPath, 'w')
                 f.close()
-                """except: #Adds a suffix if there's a duplicate file with the same name
-                    attempts = 1
-                    while attempts != 0:
-                        try:
-                            f = open(fName + " (" + str(attempts) + ").csv", "w")
-                            attempts = 0
-                        except:
-                            attempts += 1
-                    f.close()"""
-                with open(fPath , 'wt') as convfile:
-                    writer = csv.writer(convfile, delimiter = ",")
+                with open(fPath, 'wt') as convfile:
+                    writer = csv.writer(convfile, delimiter=",")
                     writer.writerow(cRow)
                     convfile.close()
-
+                print("Wrote " + fPath[:22] + fPath[61:])
             csvfile.close()
 
 #Setting up the button

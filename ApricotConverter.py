@@ -49,31 +49,71 @@ fplabel = tk.Label(root, textvariable = filePath)
 fplabel.pack()
 
 def conv():
-    with open(fp, 'rb') as csvfile:
-        reader = csv.reader(csvfile, delimiter = ",")
+    if(fp != ""):
+        with open(fp, 'rt') as csvfile:
+            reader = csv.reader(csvfile, delimiter = ",")
 
-        if not os.path.exists("Converted Csvs"):
-            os.makedirs("Converted Csvs")
+            if not os.path.exists(fp + "/../Converted Csvs"):
+                os.makedirs(fp + "/../Converted Csvs")
 
-        for row in reader:
-            cRow = [""] * 10 #Change this later
-            #Transform the row with a giant if statement
-            try: #Creates a separate file for each converted entry
-                f = open(cRow[1] + cRow[0] + ".csv", "w+")
-            except: #Adds a suffix if there's a duplicate file with the same name
-                attempts = 1
-                while attempts != 0:
-                    try:
-                        f = open("Converted Csvs/" + cRow[1] + cRow[0] + " (" + str(attempts) + ").csv", "w+")
-                        attempts = 0
-                    except:
-                        attempts += 1
-            with open(f, 'wb') as convfile:
-                writer = csv.writer(convfile, delimiter = ",")
-                writer.writerow(cRow)
-                convfile.close()
+            for row in reader:
+                cRow = [""] * 77 #Change this later
 
-        csvfile.close()
+                #Clients.csv
+                commaPos = row[0].index(",")
+                cRow[2] = row[0][:commaPos]  #Last name
+                firstPos = len(cRow[2]) + 2
+                middlePos = row[0][firstPos:].index(" ") + firstPos
+                cRow[0] = row[0][firstPos:middlePos] #First name
+                cRow[1] = row[0][middlePos + 1:] #Middle name
+                cRow[3] = row[12] #Application date
+                cRow[6] = row[6] #DOB
+                cRow[15] = row[1] #Address, line 1
+                try:
+                    commaPos = row[1].index(",")
+                    cRow[16] = row[1][commaPos + 1:] #Address, line 2
+                except:
+                    cRow[16] = ""
+                cRow[18] = row[2] #City
+                cRow[19] = "Il"
+                cRow[21] = row[3] #Zip code
+                cRow[22] = "United States"
+                cRow[25] = row[13] #Ward
+                cRow[27] = row[4] #Phone number
+                cRow[29] = row[5] #Email
+
+                #LongTermCareCaseNotes.csv
+                cRow[64] = cRow[0] #First Name
+                cRow[65] = cRow[1] #Middle Name
+                cRow[66] = cRow[2] #Last Name
+
+                #ProgramEnrollment.csv
+                cRow[71] = cRow[0]
+                cRow[72] = cRow[1]
+                cRow[73] = cRow[2]
+                cRow[74] = row[9] #Program enrollment
+                cRow[75] = row[11] #Start date
+                cRow[76] = row[12] #End date
+
+                #try: #Creates a separate file for each converted entry
+                fPath = fp + '/../Converted Csvs/' + cRow[2].lower() + cRow[0][0].upper() + cRow[0][1:].lower() + '.csv'
+                f = open(fPath, 'w')
+                f.close()
+                """except: #Adds a suffix if there's a duplicate file with the same name
+                    attempts = 1
+                    while attempts != 0:
+                        try:
+                            f = open(fName + " (" + str(attempts) + ").csv", "w")
+                            attempts = 0
+                        except:
+                            attempts += 1
+                    f.close()"""
+                with open(fPath , 'wt') as convfile:
+                    writer = csv.writer(convfile, delimiter = ",")
+                    writer.writerow(cRow)
+                    convfile.close()
+
+            csvfile.close()
 
 #Setting up the button
 button = tk.Button(root, text = "Convert!", command = conv)
